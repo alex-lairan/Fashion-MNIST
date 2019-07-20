@@ -1,0 +1,9 @@
+.idea/
+
+images_show/**/*
+logs/**/*
+models/**/*
+
+!logs/.keep
+!images_show/.keep
+!models/.keep
