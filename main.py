@@ -1,13 +1,13 @@
 from tensorflow.python import keras
 import numpy as np
-from .create_methods import *
+from create_methods import *
 
 INPUT_NEURONS = 784
 OUTPUT_NEURONS = 10
 
 
 def fit_model(train, test, model, name, epochs=1500, batch_size=32):
-    tb_callback = keras.callbacks.TensorBoard(name)
+    tb_callback = keras.callbacks.TensorBoard('./logs/' + name)
     model.fit(*train,
               epochs=epochs,
               batch_size=batch_size,
@@ -15,8 +15,8 @@ def fit_model(train, test, model, name, epochs=1500, batch_size=32):
               validation_data=test
               )
 
-    keras.utils.plot_model(model, name + '.png')
-    model.save(name)
+    keras.utils.plot_model(model, './images/' + name + '.png')
+    model.save('./models/' + name + ".h5")
 
 
 def data():
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         train=train_data,
         test=test_data,
         model=create_reg_lin_model(INPUT_NEURONS, OUTPUT_NEURONS),
-        name="./logs/linear_regression"
+        name="linear_regression"
     )
 
     # Deep learning models
@@ -53,14 +53,14 @@ if __name__ == '__main__':
                 train=train_data,
                 test=test_data,
                 model=create_mlp_model(layer, 2**neron, INPUT_NEURONS, OUTPUT_NEURONS),
-                name="./logs/DNN_" + str(layer) + '_' + str(neron)
+                name="DNN_" + str(layer) + '_' + str(neron)
             )
 
             fit_model(
                 train=train_data,
                 test=test_data,
                 model=create_mlp_dropout_model(layer, 2**neron, INPUT_NEURONS, OUTPUT_NEURONS),
-                name="./logs/DNN_dropout_" + str(layer) + '_' + str(neron)
+                name="DNN_dropout_" + str(layer) + '_' + str(neron)
             )
 
     # CNN model
@@ -68,14 +68,21 @@ if __name__ == '__main__':
         train=train_data,
         test=test_data,
         model=create_conv_net_model1(INPUT_NEURONS, OUTPUT_NEURONS),
-        name='./logs_project/CNN_1'
+        name='CNN_1'
     )
 
     fit_model(
         train=train_data,
         test=test_data,
-        model=create_conv_net_model1(INPUT_NEURONS, OUTPUT_NEURONS),
-        name='./logs_project/CNN_2'
+        model=create_conv_net_model2(INPUT_NEURONS, OUTPUT_NEURONS),
+        name='CNN_2'
     )
 
-    pass
+    fit_model(
+        train=train_data,
+        test=test_data,
+        model=create_conv_net_model1(
+            INPUT_NEURONS, OUTPUT_NEURONS, optimizer=keras.optimizers.adam(lr=0.0002, beta_1=0.5)
+        ),
+        name='CNN_1_Adam'
+    )
